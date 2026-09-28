@@ -86,6 +86,7 @@ BarWidget {
     anchors.fill: parent
     bar: root.bar
     text: "󱐋"
+    fontSize: Style.bar.iconFont * 2
     active: root.enabled
     opacity: root.enabled ? 1 : 0.45
     tooltipText: root.enabled ? "Always on: lid close, suspend, and idle blocked" : "Normal power: click to stay always on"
