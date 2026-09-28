@@ -1,0 +1,95 @@
+#!/bin/bash
+
+# omarchy-caffeine: keep the laptop fully awake, lid open or closed.
+#
+#   on      block suspend, idle, and the lid switch; stop screensaver/lock on idle
+#   off     release everything and restore normal idle behavior
+#   toggle  flip between on and off
+#   status  print {"enabled":true|false} as JSON
+#
+# The inhibitor is a plain user-level systemd-inhibit (no root needed while the
+# session is active). It is detached with setsid so it survives shell restarts.
+
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/caffeine"
+PID_FILE="$STATE_DIR/inhibit-pid"
+IDLE_OWNER_FILE="$STATE_DIR/owns-stay-awake"
+STAY_AWAKE_FILE="$HOME/.local/state/omarchy/indicators/stay-awake"
+WHO="Caffeine"
+WHAT="sleep:idle:handle-lid-switch:handle-suspend-key:handle-hibernate-key"
+
+inhibitor_pid() {
+  local pid
+  [[ -s $PID_FILE ]] || return 1
+  pid=$(<"$PID_FILE")
+  [[ $pid =~ ^[0-9]+$ ]] || return 1
+  grep -qs "systemd-inhibit" "/proc/$pid/cmdline" || return 1
+  printf '%s\n' "$pid"
+}
+
+enabled() {
+  inhibitor_pid >/dev/null
+}
+
+turn_on() {
+  enabled && return 0
+  mkdir -p "$STATE_DIR"
+
+  # Remember whether we turned Omarchy's stay-awake on, so off only undoes our change.
+  if [[ ! -f $STAY_AWAKE_FILE ]]; then
+    touch "$IDLE_OWNER_FILE"
+    omarchy-toggle-idle stay-awake >/dev/null 2>&1 || true
+  fi
+
+  setsid -f systemd-inhibit \
+    --what="$WHAT" \
+    --who="$WHO" \
+    --why="Always on: keep running with the lid closed" \
+    --mode=block \
+    sleep infinity >/dev/null 2>&1 &
+
+  # setsid -f forks, so find the real inhibitor by its --who tag.
+  local pid
+  for _ in $(seq 1 50); do
+    pid=$(pgrep -u "$UID" -f -- "systemd-inhibit .*--who=$WHO" | head -1)
+    [[ -n $pid ]] && break
+    sleep 0.02
+  done
+  [[ -n $pid ]] && printf '%s\n' "$pid" >"$PID_FILE"
+
+  notify-send -a "Caffeine" -i "weather-clear" "Always on" "Suspend, idle, and lid close are blocked." >/dev/null 2>&1 || true
+}
+
+turn_off() {
+  local pid
+  if pid=$(inhibitor_pid); then
+    kill "$pid" >/dev/null 2>&1 || true
+  fi
+  pkill -u "$UID" -f -- "systemd-inhibit .*--who=$WHO" >/dev/null 2>&1 || true
+  rm -f "$PID_FILE"
+
+  if [[ -f $IDLE_OWNER_FILE ]]; then
+    omarchy-toggle-idle allow-idle >/dev/null 2>&1 || true
+    rm -f "$IDLE_OWNER_FILE"
+  fi
+
+  notify-send -a "Caffeine" -i "weather-clear-night" "Normal power" "Suspend, idle, and lid close behave normally." >/dev/null 2>&1 || true
+}
+
+print_status() {
+  if enabled; then
+    printf '{"enabled":true,"text":"󱐋","tooltip":"Always on (lid close ignored)","class":"enabled"}\n'
+  else
+    printf '{"enabled":false,"text":"󱐋","tooltip":"Normal power","class":"disabled"}\n'
+  fi
+}
+
+case "${1:-toggle}" in
+  on|start|enable)   turn_on; print_status ;;
+  off|stop|disable)  turn_off; print_status ;;
+  toggle)            if enabled; then turn_off; else turn_on; fi; print_status ;;
+  status|--status)   print_status ;;
+  *)
+    echo "Usage: omarchy-caffeine [on|off|toggle|status]" >&2
+    exit 1
+    ;;
+esac
