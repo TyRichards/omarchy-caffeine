@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# omarchy-caffeine: keep the laptop fully awake, lid open or closed.
+# omarchy-rabbit: keep the laptop fully awake, lid open or closed.
 #
 #   on      block suspend, idle, and the lid switch; stop screensaver/lock on idle
 #   off     release everything and restore normal idle behavior
@@ -10,11 +10,11 @@
 # The inhibitor is a plain user-level systemd-inhibit (no root needed while the
 # session is active). It is detached with setsid so it survives shell restarts.
 
-STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/caffeine"
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/rabbit"
 PID_FILE="$STATE_DIR/inhibit-pid"
 IDLE_OWNER_FILE="$STATE_DIR/owns-stay-awake"
 STAY_AWAKE_FILE="$HOME/.local/state/omarchy/indicators/stay-awake"
-WHO="Caffeine"
+WHO="Rabbit"
 WHAT="sleep:idle:handle-lid-switch:handle-suspend-key:handle-hibernate-key"
 
 inhibitor_pid() {
@@ -56,7 +56,7 @@ turn_on() {
   done
   [[ -n $pid ]] && printf '%s\n' "$pid" >"$PID_FILE"
 
-  notify-send -a "Caffeine" -i "weather-clear" "Always on" "Suspend, idle, and lid close are blocked." >/dev/null 2>&1 || true
+  notify-send -a "Rabbit" -i "weather-clear" "Always on" "Suspend, idle, and lid close are blocked." >/dev/null 2>&1 || true
 }
 
 turn_off() {
@@ -72,14 +72,14 @@ turn_off() {
     rm -f "$IDLE_OWNER_FILE"
   fi
 
-  notify-send -a "Caffeine" -i "weather-clear-night" "Normal power" "Suspend, idle, and lid close behave normally." >/dev/null 2>&1 || true
+  notify-send -a "Rabbit" -i "weather-clear-night" "Normal power" "Suspend, idle, and lid close behave normally." >/dev/null 2>&1 || true
 }
 
 print_status() {
   if enabled; then
-    printf '{"enabled":true,"text":"󱐋","tooltip":"Always on (lid close ignored)","class":"enabled"}\n'
+    printf '{"enabled":true,"tooltip":"Always on (lid close ignored)","class":"enabled"}\n'
   else
-    printf '{"enabled":false,"text":"󱐋","tooltip":"Normal power","class":"disabled"}\n'
+    printf '{"enabled":false,"tooltip":"Normal power","class":"disabled"}\n'
   fi
 }
 
@@ -89,7 +89,7 @@ case "${1:-toggle}" in
   toggle)            if enabled; then turn_off; else turn_on; fi; print_status ;;
   status|--status)   print_status ;;
   *)
-    echo "Usage: omarchy-caffeine [on|off|toggle|status]" >&2
+    echo "Usage: omarchy-rabbit [on|off|toggle|status]" >&2
     exit 1
     ;;
 esac

@@ -2,7 +2,7 @@
 # Link this plugin into Omarchy and put the widget in the bar.
 set -euo pipefail
 
-ID="io.github.tyrichards.caffeine"
+ID="io.github.tyrichards.rabbit"
 SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEST="$HOME/.config/omarchy/plugins/$ID"
 
@@ -12,7 +12,7 @@ if [[ -e $DEST && ! -L $DEST ]]; then
   exit 1
 fi
 ln -sfn "$SRC" "$DEST"
-chmod +x "$SRC/bin/omarchy-caffeine"
+chmod +x "$SRC/bin/omarchy-rabbit"
 
 omarchy-shell shell rescanPlugins >/dev/null 2>&1 || true
 placement=(--section right)
@@ -20,4 +20,4 @@ if omarchy plugin list 2>/dev/null | grep -q '^omarchy.agents .*enabled'; then
   placement+=(--before omarchy.agents)
 fi
 omarchy plugin enable "$ID" "${placement[@]}"
-echo "Caffeine installed. Click the bolt in the bar, or run: $SRC/bin/omarchy-caffeine toggle"
+echo "Rabbit installed. Click the rabbit in the bar, or run: $SRC/bin/omarchy-rabbit toggle"

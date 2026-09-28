@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "id": "io.github.tyrichards.caffeine",
-  "name": "Caffeine",
+  "id": "io.github.tyrichards.rabbit",
+  "name": "Rabbit",
   "version": "0.1.0",
   "author": "Ty Richards",
   "license": "MIT",
-  "description": "Always-on toggle: keep every process running with the lid closed by blocking suspend, idle, and the lid switch.",
+  "description": "Always-on toggle that keeps going and going: keep every process running with the lid closed by blocking suspend, idle, and the lid switch.",
   "kinds": [
     "bar-widget"
   ],
@@ -13,8 +13,8 @@
     "barWidget": "Panel.qml"
   },
   "barWidget": {
-    "displayName": "Caffeine",
-    "description": "Click to toggle always-on mode. Lit when suspend, idle, and lid close are blocked.",
+    "displayName": "Rabbit",
+    "description": "Click the rabbit to toggle always-on mode. Lit when suspend, idle, and lid close are blocked.",
     "category": "System",
     "allowMultiple": false,
     "defaultSection": "right"

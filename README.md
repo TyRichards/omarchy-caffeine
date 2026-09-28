@@ -1,13 +1,13 @@
-# Omarchy Caffeine
+# Omarchy Rabbit
 
-A one-click **always on** mode for Omarchy laptops. When the bolt in the bar is
+A one-click **always on** mode for Omarchy laptops. Like the battery bunny, it keeps going and going. When the rabbit in the bar is
 lit, closing the lid does nothing: no suspend, no idle screensaver, no idle
 lock. Agents, music, servers, downloads, everything keeps running exactly as if
 the lid were open.
 
 ## How it works
 
-`bin/omarchy-caffeine on` starts a user-level
+`bin/omarchy-rabbit on` starts a user-level
 `systemd-inhibit --mode=block` holding these inhibitors:
 
 | Inhibitor              | Effect                                           |
@@ -19,7 +19,7 @@ the lid were open.
 | `handle-hibernate-key` | the hibernate key is ignored                     |
 
 It also turns on Omarchy's built-in *Stay Awake* (no screensaver or idle lock)
-and turns it back off when Caffeine is turned off, unless you had it on already.
+and turns it back off when Rabbit is turned off, unless you had it on already.
 
 No root is needed. The inhibitor runs detached, so it survives a shell restart.
 It does not survive a reboot; always-on is off after boot.
@@ -27,21 +27,21 @@ It does not survive a reboot; always-on is off after boot.
 ## Install
 
 ```bash
-git clone https://github.com/TyRichards/omarchy-caffeine ~/Work/github.com/TyRichards/omarchy-caffeine
-~/Work/github.com/TyRichards/omarchy-caffeine/install.sh
+git clone https://github.com/TyRichards/omarchy-rabbit ~/Work/github.com/TyRichards/omarchy-rabbit
+~/Work/github.com/TyRichards/omarchy-rabbit/install.sh
 ```
 
 ## Use
 
-- **Left click** the bolt: toggle always on.
+- **Left click** the rabbit: toggle always on.
 - **Right click**: list current inhibitors in a terminal.
-- CLI: `bin/omarchy-caffeine on|off|toggle|status`
-- IPC: `omarchy-shell io.github.tyrichards.caffeine toggle`
+- CLI: `bin/omarchy-rabbit on|off|toggle|status`
+- IPC: `omarchy-shell io.github.tyrichards.rabbit toggle`
 
 Bind a key in `~/.config/hypr/bindings.lua`:
 
 ```lua
-o.bind("SUPER + SHIFT + C", "Toggle always on", "omarchy-shell io.github.tyrichards.caffeine toggle")
+o.bind("SUPER + SHIFT + C", "Toggle always on", "omarchy-shell io.github.tyrichards.rabbit toggle")
 ```
 
 ## Notes
