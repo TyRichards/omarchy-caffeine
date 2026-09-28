@@ -4,7 +4,7 @@ import Quickshell.Io
 import qs.Commons
 import qs.Ui
 
-// Rabbit: one-click "always on" mode for the Omarchy bar.
+// Rabbit: one-click "always on" mode for the Omarchy bar. Keeps going and going.
 // It keeps going and going. Bright = suspend, idle, and lid close are blocked.
 // Dim = normal power behavior.
 BarWidget {
